@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEE Prep Hub — 2022 & 2023 Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --border: #E4E2DC;
+    --border-light: #EEECE8;
+    --text-primary: #1A1916;
+    --text-secondary: #6B6860;
+    --text-tertiary: #A8A69F;
+    --accent-math: #3D3A8C;
+    --accent-math-light: #EEEDF8;
+    --accent-phy: #0D6B4E;
+    --accent-phy-light: #E4F3ED;
+    --accent-chem: #8C2D10;
+    --accent-chem-light: #F5EBE7;
+    --diff-ncert: #9FE1CB;
+    --diff-ncert-plus: #1D9E75;
+    --diff-jee: #AFA9EC;
+    --diff-jee-plus: #534AB7;
+    --radius: 12px;
+    --radius-sm: 6px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(247,246,243,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .nav-brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .nav-brand span { font-style: italic; color: var(--text-secondary); }
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+  }
+  .nav-links a:hover { color: var(--text-primary); background: var(--border-light); }
+
+  /* HERO */
+  .hero {
+    padding: 72px 24px 48px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 6vw, 60px);
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+  .hero h1 em { font-style: italic; color: var(--text-secondary); }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+
+  /* STAT ROW */
+  .stat-row {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    max-width: 540px;
+    margin: 0 auto 48px;
+  }
+  .stat-item {
+    flex: 1;
+    background: var(--surface);
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-tertiary); font-weight: 500; letter-spacing: 0.04em; }
+
+  /* PDF CARDS */
+  .pdf-section {
+    max-width: 900px;
+    margin: 0 auto 56px;
+    padding: 0 24px;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+  .pdf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .pdf-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.18s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .pdf-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .pdf-card.y2022::before { background: var(--accent-math); }
+  .pdf-card.y2023::before { background: var(--accent-chem); }
+  .pdf-card:hover { border-color: var(--text-tertiary); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .pdf-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .pdf-card.y2022 .pdf-icon { background: var(--accent-math-light); }
+  .pdf-card.y2023 .pdf-icon { background: var(--accent-chem-light); }
+  .pdf-info { flex: 1; }
+  .pdf-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .pdf-meta { font-size: 12px; color: var(--text-tertiary); }
+  .pdf-arrow { font-size: 18px; color: var(--text-tertiary); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 900px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .modal-title { font-weight: 600; font-size: 15px; }
+  .modal-close {
+    background: var(--border-light);
+    border: none;
+    cursor: pointer;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text-primary); }
+  .modal-body { flex: 1; overflow: hidden; }
+  .modal-body iframe { width: 100%; height: 100%; border: none; }
+
+  /* MAIN CONTENT */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* TABS */
+  .tab-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: var(--text-primary);
+    background: var(--surface);
+    border-bottom-color: var(--text-primary);
+  }
+  .tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .section-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    letter-spacing: -0.4px;
+  }
+  .year-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--bg);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .year-btn {
+    padding: 4px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .year-btn.active {
+    background: var(--surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* CHART */
+  .chart-wrap {
+    padding: 20px 22px;
+  }
+
+  /* DIFFICULTY TABLE */
+  .diff-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg);
+  }
+  .diff-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  .diff-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 14px 22px 6px;
+  }
+
+  .diff-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 22px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.1s;
+  }
+  .diff-row:last-child { border-bottom: none; }
+  .diff-row:hover { background: var(--bg); }
+  .diff-row:hover .diff-tooltip { opacity: 1; }
+
+  .ch-name {
+    font-size: 13px;
+    font-weight: 500;
+    width: 200px;
+    flex-shrink: 0;
+    color: var(--text-primary);
+  }
+  .ch-qs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    width: 36px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    height: 8px;
+  }
+  .bar-seg {
+    height: 8px;
+    border-radius: 2px;
+    min-width: 2px;
+  }
+  .diff-pill {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .diff-tooltip {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* PILL STYLES */
+  .pill-ncert { background: #E4F5EE; color: #085041; }
+  .pill-ncert-plus { background: #C5EDE2; color: #04342C; }
+  .pill-jee { background: #EEEDFC; color: #26215C; }
+  .pill-jee-plus { background: #534AB7; color: #EEEDFE; }
+
+  /* SUBJECT SWITCHER */
+  .subj-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .subj-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .subj-btn:hover { border-color: var(--text-tertiary); color: var(--text-primary); }
+  .subj-btn.active-math { background: var(--accent-math-light); color: var(--accent-math); border-color: var(--accent-math); }
+  .subj-btn.active-phy  { background: var(--accent-phy-light);  color: var(--accent-phy);  border-color: var(--accent-phy); }
+  .subj-btn.active-chem { background: var(--accent-chem-light); color: var(--accent-chem); border-color: var(--accent-chem); }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .hero { padding: 48px 16px 32px; }
+    .stat-row { flex-direction: column; gap: 0; }
+    .pdf-grid { grid-template-columns: 1fr; }
+    .main { padding: 0 16px 60px; }
+    .ch-name { width: 130px; }
+    .diff-tooltip { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">CEE <span>Prep Hub</span></div>
+  <ul class="nav-links">
+    <li><a href="#weightage">Weightage</a></li>
+    <li><a href="#difficulty">Difficulty</a></li>
+    <li><a href="#papers">Papers</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Combined Entrance Examination · Assam</p>
+  <h1>Know where the<br><em>marks come from.</em></h1>
+  <p class="hero-sub">Chapter-wise weightage and difficulty analysis for CEE 2022 & 2023, so you know exactly where to spend your time.</p>
+
+  <div class="stat-row">
+    <div class="stat-item">
+      <div class="stat-num">120</div>
+      <div class="stat-label">Questions/paper</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Years analysed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Subjects</div>
+    </div>
+  </div>
+</section>
+
+<!-- PDF CARDS -->
+<section class="pdf-section" id="papers">
+  <p class="section-label">Question Papers</p>
+  <div class="pdf-grid">
+    <div class="pdf-card y2022" onclick="openPdf('2022')">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <div class="pdf-title">CEE 2022</div>
+        <div class="pdf-meta">Mathematics · Physics · Chemistry</div>
+      </div>
+      <span class="pdf-arrow">↗</span>
+    </div>
+    <div class="pdf-card y2023" onclick="openPdf('2023')">
+      <div class="pdf-icon">📄</div>
+      <div class="pdf-info">
+        <div class="pdf-title">CEE 2023</div>
+        <div class="pdf-meta">Mathematics · Physics · Chemistry</div>
+      </div>
+      <span class="pdf-arrow">↗</span>
+    </div>
+  </div>
+</section>
+
+<!-- PDF MODAL -->
+<div class="modal-overlay" id="pdfModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">CEE Question Paper</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="pdfFrame" src="" title="CEE Question Paper"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- WEIGHTAGE -->
+  <section id="weightage">
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Chapter Weightage</h2>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+          <div class="subj-bar" id="wSubjBar">
+            <button class="subj-btn active-math" onclick="setWSubj('maths',this)">Mathematics</button>
+            <button class="subj-btn" onclick="setWSubj('physics',this)">Physics</button>
+            <button class="subj-btn" onclick="setWSubj('chemistry',this)">Chemistry</button>
+          </div>
+          <div class="year-toggle">
+            <button class="year-btn active" id="wYear2022" onclick="setWYear(2022)">2022</button>
+            <button class="year-btn" id="wYear2023" onclick="setWYear(2023)">2023</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div style="position:relative;">
+          <canvas id="weightChart" role="img" aria-label="Chapter weightage bar chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFFICULTY -->
+  <section id="difficulty">
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Difficulty Levels</h2>
+        <div class="subj-bar" id="dSubjBar">
+          <button class="subj-btn active-math" onclick="setDSubj('maths',this)">Mathematics</button>
+          <button class="subj-btn" onclick="setDSubj('physics',this)">Physics</button>
+          <button class="subj-btn" onclick="setDSubj('chemistry',this)">Chemistry</button>
+        </div>
+      </div>
+      <div class="diff-legend">
+        <div class="diff-legend-item"><div class="dot" style="background:#9FE1CB"></div> NCERT direct</div>
+        <div class="diff-legend-item"><div class="dot" style="background:#1D9E75"></div> NCERT+ twisted</div>
+        <div class="diff-legend-item"><div class="dot" style="background:#AFA9EC"></div> JEE Mains level</div>
+        <div class="diff-legend-item"><div class="dot" style="background:#534AB7"></div> JEE Mains+</div>
+        <div class="diff-legend-item" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-tertiary)">Qs = '22 / '23 · hover for notes</div>
+      </div>
+      <div id="diffTable"></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const WEIGHT_DATA = {
+  maths: {
+    2022: [["Determinants & Matrices",4],["Integration",4],["Sequences & Series",3],["Differentiation",3],["Coord. Geometry",3],["Area under Curves",2],["Probability",2],["Permutations & Combinations",2],["Vectors",2],["Limits",2],["Quadratic Equations",2],["Trigonometry",2],["Complex Numbers",1],["Inverse Trigonometry",1],["3D Geometry",1],["Binomial Theorem",1],["Continuity & Diff.",1],["Straight Lines",1],["Others",3]],
+    2023: [["Functions & Relations",4],["Application of Derivatives",3],["Definite Integration",3],["Inverse Trigonometry",3],["Matrices & Determinants",3],["Area under Curves",2],["Probability",2],["Vectors",2],["3D Geometry",2],["Straight Lines",2],["Quadratic Equations",2],["Sets",2],["Trigonometry",2],["Complex Numbers",2],["Binomial Theorem",2],["Limits",1],["Linear Programming",1],["Others",3]]
+  },
+  physics: {
+    2022: [["Waves & Sound",4],["Nuclear & Atomic Physics",4],["Kinematics",3],["Gravitation",3],["Current Electricity",3],["Electrostatics",2],["Rotational Motion",2],["Kinetic Theory",2],["Dimensions & Errors",2],["Communication Systems",2],["Thermodynamics",1],["SHM",1],["Magnetism",1],["Optics",1],["EM Waves",1],["Photoelectric Effect",1],["EMI",1],["Modern Physics",1],["Others",3]],
+    2023: [["Kinematics",4],["Electrostatics",4],["Magnetism",4],["Thermodynamics & KTG",4],["Rotational Motion",3],["Optics",3],["Nuclear Physics",3],["Laws of Motion",3],["Waves",2],["Fluid Mechanics",2],["Modern Physics",2],["Atomic/Thermal Radiation",2],["Elasticity/Error/Electronics",3],["Current Electricity",1]]
+  },
+  chemistry: {
+    2022: [["Organic Chemistry",10],["Chemical Bonding",5],["Chemical Kinetics",4],["Ionic Equilibrium",3],["Periodic Properties",3],["Redox Reactions",3],["Coordination Chemistry",2],["Solid State",2],["Atomic Structure",2],["Biomolecules",2],["Electrochemistry",1],["States of Matter",1],["Surface Chemistry",1],["Polymers",1],["Everyday Life Chem.",1]],
+    2023: [["Organic Chemistry",9],["Ionic Equilibrium & Buffers",4],["p-block Elements",4],["States of Matter",3],["Redox Reactions",2],["Electrochemistry",2],["Chemical Kinetics",2],["Solid State",2],["Atomic Structure",2],["Polymers",2],["Thermodynamics",1],["Solutions",1],["Chemical Bonding",1],["Coordination Chemistry",1],["Others",2]]
+  }
+};
+
+const DIFF_DATA = {
+  maths: [
+    {ch:"Vectors",qs:"2/2",lvl:"NCERT",note:"Formula-based; direct NCERT questions"},
+    {ch:"Quadratic Equations",qs:"2/2",lvl:"NCERT",note:"Nature of roots, basic formula application"},
+    {ch:"Trigonometry",qs:"2/2",lvl:"NCERT",note:"Identities & values directly from NCERT"},
+    {ch:"Binomial Theorem",qs:"1/2",lvl:"NCERT",note:"General term, middle term — straightforward"},
+    {ch:"Straight Lines",qs:"1/2",lvl:"NCERT",note:"Distance, slope — formula plugging"},
+    {ch:"Inverse Trigonometry",qs:"1/3",lvl:"NCERT+",note:"Principal values + small identity twists"},
+    {ch:"Sequences & Series",qs:"3/—",lvl:"NCERT+",note:"AP/GP/HP; sum formulas with mild twists"},
+    {ch:"Probability",qs:"2/2",lvl:"NCERT+",note:"Bayes' theorem can appear in 2023"},
+    {ch:"Complex Numbers",qs:"1/2",lvl:"NCERT+",note:"Modulus, argument, De Moivre"},
+    {ch:"3D Geometry",qs:"1/2",lvl:"NCERT+",note:"Direction cosines, line equations"},
+    {ch:"P&C / Combinatorics",qs:"2/3",lvl:"NCERT+",note:"Standard counting; occasionally tricky"},
+    {ch:"Limits",qs:"2/1",lvl:"NCERT+",note:"Standard forms; L'Hôpital if needed"},
+    {ch:"Sets & Functions",qs:"—/4",lvl:"NCERT+",note:"Domain/range; composition in 2023"},
+    {ch:"Determinants & Matrices",qs:"4/3",lvl:"NCERT+",note:"Properties & inverse; rarely tricky"},
+    {ch:"Continuity & Diff.",qs:"1/—",lvl:"NCERT+",note:"Concept-based; standard checks"},
+    {ch:"Coord. Geometry (Conics)",qs:"3/—",lvl:"JEE Mains",note:"Tangent/normal to parabola, ellipse"},
+    {ch:"Differentiation",qs:"3/—",lvl:"JEE Mains",note:"Implicit, parametric, higher order"},
+    {ch:"App. of Derivatives",qs:"—/3",lvl:"JEE Mains",note:"Maxima/minima, monotonicity"},
+    {ch:"Integration",qs:"4/3",lvl:"JEE Mains",note:"By parts, substitution, partial fractions"},
+    {ch:"Area under Curves",qs:"2/2",lvl:"JEE Mains",note:"Setup & limits need careful thinking"},
+  ],
+  physics: [
+    {ch:"Communication Systems",qs:"2/—",lvl:"NCERT",note:"Fully theory-based; direct NCERT facts"},
+    {ch:"Nuclear & Atomic Phys.",qs:"4/3",lvl:"NCERT",note:"Decay, binding energy, Bohr model"},
+    {ch:"Gravitation",qs:"3/—",lvl:"NCERT",note:"Orbital velocity, escape velocity formulas"},
+    {ch:"Dimensions & Errors",qs:"2/—",lvl:"NCERT",note:"Dimensional analysis — formula-based"},
+    {ch:"Modern Physics",qs:"1/2",lvl:"NCERT",note:"de Broglie, photoelectric — direct formulas"},
+    {ch:"EM Waves",qs:"1/—",lvl:"NCERT",note:"Properties & spectrum — pure theory"},
+    {ch:"Photoelectric Effect",qs:"1/—",lvl:"NCERT",note:"Einstein equation; threshold frequency"},
+    {ch:"Laws of Motion",qs:"—/3",lvl:"NCERT+",note:"FBD with mild combinations in 2023"},
+    {ch:"Kinematics",qs:"3/4",lvl:"NCERT+",note:"Projectile & relative motion; slightly applied"},
+    {ch:"Kinetic Theory",qs:"2/4",lvl:"NCERT+",note:"rms speed, degrees of freedom, Cp/Cv"},
+    {ch:"SHM / Oscillations",qs:"1/—",lvl:"NCERT+",note:"Time period, energy — standard forms"},
+    {ch:"Waves & Sound",qs:"4/2",lvl:"NCERT+",note:"Doppler, beats, standing waves"},
+    {ch:"Thermodynamics",qs:"1/4",lvl:"NCERT+",note:"1st/2nd law; Carnot engine calculation"},
+    {ch:"Optics",qs:"1/3",lvl:"NCERT+",note:"Lens formula easy; interference in 2023"},
+    {ch:"Fluid Mechanics",qs:"—/2",lvl:"NCERT+",note:"Bernoulli, continuity — application needed"},
+    {ch:"Current Electricity",qs:"3/1",lvl:"JEE Mains",note:"Kirchhoff's laws, Wheatstone bridge circuits"},
+    {ch:"Electrostatics",qs:"2/4",lvl:"JEE Mains",note:"Field, potential, capacitors — conceptual"},
+    {ch:"Magnetism",qs:"1/4",lvl:"JEE Mains",note:"Biot-Savart, Ampere, force on charges"},
+    {ch:"Rotational Motion",qs:"2/3",lvl:"JEE Mains",note:"MOI, torque, angular momentum — tricky"},
+    {ch:"EMI / Transformers",qs:"1/—",lvl:"JEE Mains",note:"Faraday's law; Lenz's law applications"},
+  ],
+  chemistry: [
+    {ch:"Biomolecules",qs:"2/—",lvl:"NCERT",note:"Pure theory — structures, functions"},
+    {ch:"Everyday Life Chem.",qs:"1/—",lvl:"NCERT",note:"Drug types, food additives — rote"},
+    {ch:"Polymers",qs:"1/2",lvl:"NCERT",note:"Classification, names — direct NCERT"},
+    {ch:"Periodic Properties",qs:"3/—",lvl:"NCERT",note:"Trends — ionisation, EA — conceptual"},
+    {ch:"Redox Reactions",qs:"3/2",lvl:"NCERT",note:"Balancing; oxidation states"},
+    {ch:"Atomic Structure",qs:"2/2",lvl:"NCERT",note:"Quantum numbers, orbitals — standard"},
+    {ch:"Surface Chemistry",qs:"1/—",lvl:"NCERT",note:"Adsorption, colloids — theory"},
+    {ch:"States of Matter",qs:"1/3",lvl:"NCERT+",note:"Gas laws with numerical in 2023"},
+    {ch:"Coordination Chemistry",qs:"2/1",lvl:"NCERT+",note:"Nomenclature, isomers, VBT/CFT basics"},
+    {ch:"Chemical Bonding",qs:"5/1",lvl:"NCERT+",note:"VSEPR, hybridisation, MOT — applied"},
+    {ch:"Solid State",qs:"2/2",lvl:"NCERT+",note:"Unit cell calculations; packing efficiency"},
+    {ch:"Electrochemistry",qs:"1/2",lvl:"NCERT+",note:"Nernst equation, cell EMF calculations"},
+    {ch:"p-block Elements",qs:"—/4",lvl:"NCERT+",note:"Reactions & properties — needs memorisation"},
+    {ch:"Thermodynamics",qs:"—/1",lvl:"NCERT+",note:"Hess's law, ΔG — formula-based"},
+    {ch:"Chemical Kinetics",qs:"4/2",lvl:"JEE Mains",note:"Integrated rate laws, half-life, Arrhenius"},
+    {ch:"Ionic Equilibrium",qs:"3/4",lvl:"JEE Mains",note:"Buffer pH, Ksp, hydrolysis — calculation-heavy"},
+    {ch:"Organic Chemistry",qs:"10/9",lvl:"JEE Mains",note:"Named reactions, mechanisms, isomers — high effort"},
+  ]
+};
+
+const BAR_W = {
+  "NCERT":      [85, 10, 5, 0],
+  "NCERT+":     [40, 45, 15, 0],
+  "JEE Mains":  [10, 25, 55, 10],
+  "JEE Mains+": [5,  15, 35, 45]
+};
+const PILL_CLASSES = {
+  "NCERT": "pill-ncert",
+  "NCERT+": "pill-ncert-plus",
+  "JEE Mains": "pill-jee",
+  "JEE Mains+": "pill-jee-plus"
+};
+const BAR_COLORS = ["#9FE1CB","#1D9E75","#AFA9EC","#534AB7"];
+
+const SUBJ_COLORS = {
+  maths: { bar:"#3D3A8C", light:"#EEEDF8" },
+  physics: { bar:"#0D6B4E", light:"#E4F3ED" },
+  chemistry: { bar:"#8C2D10", light:"#F5EBE7" }
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let wSubj = 'maths', wYear = 2022;
+let dSubj = 'maths';
+let weightChart = null;
+
+// ── WEIGHTAGE CHART ───────────────────────────────────────────────────
+function renderWeightChart() {
+  const data = [...WEIGHT_DATA[wSubj][wYear]].sort((a,b) => b[1]-a[1]);
+  const labels = data.map(d => d[0]);
+  const values = data.map(d => d[1]);
+  const col = SUBJ_COLORS[wSubj];
+  const h = Math.max(300, data.length * 36 + 60);
+
+  const wrap = document.querySelector('.chart-wrap div');
+  wrap.style.height = h + 'px';
+
+  if (weightChart) { weightChart.destroy(); weightChart = null; }
+
+  const ctx = document.getElementById('weightChart');
+  weightChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Questions',
+        data: values,
+        backgroundColor: col.bar,
+        borderColor: col.bar,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1A1916',
+          titleFont: { family: 'Inter', size: 12, weight: '600' },
+          bodyFont: { family: 'JetBrains Mono', size: 11 },
+          callbacks: { label: ctx => ` ${ctx.raw} question${ctx.raw>1?'s':''}` }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { stepSize: 1, font: { family: 'JetBrains Mono', size: 11 }, color: '#A8A69F', callback: v => Number.isInteger(v) ? v : '' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { family: 'Inter', size: 12, weight: '500' }, color: '#1A1916' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+
+function setWSubj(s, el) {
+  wSubj = s;
+  document.querySelectorAll('#wSubjBar .subj-btn').forEach(b => b.className = 'subj-btn');
+  el.className = `subj-btn active-${s === 'maths' ? 'math' : s === 'physics' ? 'phy' : 'chem'}`;
+  renderWeightChart();
+}
+function setWYear(y) {
+  wYear = y;
+  document.getElementById('wYear2022').classList.toggle('active', y === 2022);
+  document.getElementById('wYear2023').classList.toggle('active', y === 2023);
+  renderWeightChart();
+}
+
+// ── DIFFICULTY TABLE ──────────────────────────────────────────────────
+function renderDiffTable() {
+  const rows = DIFF_DATA[dSubj];
+  const order = ["NCERT","NCERT+","JEE Mains","JEE Mains+"];
+  let html = '';
+  order.forEach(lvl => {
+    const group = rows.filter(r => r.lvl === lvl);
+    if (!group.length) return;
+    html += `<div class="diff-group-label">${lvl}</div>`;
+    group.forEach(r => {
+      const w = BAR_W[r.lvl];
+      const pillCls = PILL_CLASSES[r.lvl];
+      const bars = BAR_COLORS.map((c,i) => w[i] ? `<div class="bar-seg" style="background:${c};width:${w[i]}%"></div>` : '').join('');
+      html += `<div class="diff-row">
+        <div class="ch-name">${r.ch}</div>
+        <div class="ch-qs">${r.qs}</div>
+        <div class="bar-wrap">${bars}</div>
+        <span class="diff-pill ${pillCls}">${r.lvl}</span>
+        <span class="diff-tooltip">${r.note}</span>
+      </div>`;
+    });
+  });
+  document.getElementById('diffTable').innerHTML = html;
+}
+
+function setDSubj(s, el) {
+  dSubj = s;
+  document.querySelectorAll('#dSubjBar .subj-btn').forEach(b => b.className = 'subj-btn');
+  el.className = `subj-btn active-${s === 'maths' ? 'math' : s === 'physics' ? 'phy' : 'chem'}`;
+  renderDiffTable();
+}
+
+// ── PDF MODAL ─────────────────────────────────────────────────────────
+const PDF_SRCS = {
+  '2022': 'https://astu.ac.in/?page_id=30281',
+  '2023': 'https://astu.ac.in/wp-content/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.php?file=https%3A%2F%2Fastu.ac.in%2Fwp-content%2Fuploads%2FCEE-2023-Question-Paper.pdf&download=true&print=true&openfile=false'
+};
+
+const PDF_URLS = {
+  '2022': 'https://astu.ac.in/?page_id=30281',
+  '2023': 'https://astu.ac.in/wp-content/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.php?file=https%3A%2F%2Fastu.ac.in%2Fwp-content%2Fuploads%2FCEE-2023-Question-Paper.pdf&download=true&print=true&openfile=false'
+};
+
+function openPdf(year) {
+  document.getElementById('modalTitle').textContent = `CEE ${year} Question Paper`;
+  if (year === '2022') {
+    window.open('https://astu.ac.in/?page_id=30281', '_blank');
+    return;
+  }
+  if (year === '2023') {
+    window.open('https://astu.ac.in/wp-content/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.php?file=https%3A%2F%2Fastu.ac.in%2Fwp-content%2Fuploads%2FCEE-2023-Question-Paper.pdf&download=true&print=true&openfile=false', '_blank');
+    return;
+  }
+  // 2023 — open in modal with a message if PDF unavailable inline
+  /*const iframe = document.getElementById('pdfFrame');
+  iframe.src = '';
+  iframe.parentElement.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;">
+      <div style="font-size:48px;">📄</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px;">CEE 2023 Question Paper</div>
+      <div style="color:#6B6860;font-size:14px;max-width:320px;line-height:1.6;">The full paper (120 questions, Math + Physics + Chemistry) is available. Download or view it below.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <a href="https://drive.google.com/file/d/1yXf2jD2vKlCee2023/view" target="_blank"
+          style="padding:10px 20px;background:#1A1916;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;">
+          Open PDF ↗
+        </a>
+      </div>
+      <div style="color:#A8A69F;font-size:12px;margin-top:8px;">120 questions · CEE 2023 · Assam</div>
+    </div>`;
+  document.getElementById('pdfModal').classList.add('open');
+  document.body.style.overflow = 'hidden';*/
+}
+function closeModal() {
+  document.getElementById('pdfModal').classList.remove('open');
+  const body = document.querySelector('.modal-body');
+  body.innerHTML = '<iframe id="pdfFrame" src="" title="CEE Question Paper"></iframe>';
+  document.body.style.overflow = '';
+}
+document.getElementById('pdfModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── INIT ──────────────────────────────────────────────────────────────
+renderWeightChart();
+renderDiffTable();
+</script>
+</body>
+</html>
